@@ -1,0 +1,127 @@
+
+\documentclass[a4paper,11pt]{article}
+\usepackage[margin=1in]{geometry}
+
+% Core packages
+\usepackage{amsmath,amssymb}
+\usepackage{tikz-cd}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{adjustbox}
+\usepackage{pdflscape}
+% Paragraphs
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1\baselineskip}
+
+\date{\today}
+
+\begin{document}
+
+\begin{table}[H]
+\centering
+\caption{Performance comparison of \modelcode{} + top-$k$ aggregation with baseline methods on the complete dataset. P: Precision, R: Recall, F1: F1 score, AUC: Area under the ROC curve.}
+\label{tab:table2}
+\tiny
+\setlength{\tabcolsep}{2.6pt}
+\begin{adjustbox}{width=0.99\linewidth}
+\begin{minipage}{\linewidth}
+\centering
+
+\begin{tabular}{l*{8}{c}}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{4}{c}{NAB} & \multicolumn{4}{c}{UCR} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+& P & R & F1 & AUC & P & R & F1 & AUC \\
+\midrule
+MERLIN & 0.8013 & 0.7262 & 0.7619 & 0.8414 & 0.7542 & 0.8018 & 0.7773 & 0.8984 \\
+DAGMM & 0.7622 & 0.7292 & 0.7453 & 0.8572 & 0.5337 & 0.9718 & 0.6890 & 0.9916 \\
+MSCRED & 0.8522 & 0.6700 & 0.7502 & 0.8401 & 0.5441 & 0.9718 & 0.6976 & 0.9920 \\
+MAD-GAN & 0.8666 & 0.7012 & 0.7752 & 0.8478 & 0.8538 & 0.9891 & 0.9165 & 0.9984 \\
+USAD & 0.8421 & 0.6667 & 0.7442 & 0.8330 & 0.8952 & \best{1.0000} & 0.9447 & 0.9989 \\
+MTAD-GAT & 0.8421 & 0.7272 & 0.7804 & 0.8221 & 0.7812 & 0.9972 & 0.8761 & 0.9978 \\
+CAE-M & 0.7918 & 0.8019 & 0.7968 & 0.8019 & 0.6981 & \best{1.0000} & 0.8222 & 0.9957 \\
+GDN & 0.8129 & 0.7872 & 0.7998 & 0.8542 & 0.6894 & 0.9988 & 0.8158 & 0.9959 \\
+TranAD & \best{0.8889} & 0.9892 & 0.9364 & 0.9541 & \best{0.9407} & \best{1.0000} & \best{0.9694} & \best{0.9994} \\
+Ours & \best{0.9101} & \best{1.0000} & \best{0.9529} & \best{0.9998} & 0.9134 & \best{1.0000} & 0.9547 & 0.9975 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.6em}
+
+\begin{tabular}{l*{8}{c}}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{4}{c}{MBA} & \multicolumn{4}{c}{SMD} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+& P & R & F1 & AUC & P & R & F1 & AUC \\
+\midrule
+MERLIN & \best{0.9846} & 0.4913 & 0.6555 & 0.7828 & 0.2871 & 0.5804 & 0.3842 & 0.7158 \\
+DAGMM & 0.9475 & 0.9900 & 0.9683 & 0.9858 & 0.9103 & 0.9914 & 0.9491 & 0.9954 \\
+MSCRED & 0.9272 & \best{1.0000} & 0.9623 & 0.9799 & 0.7276 & \best{0.9974} & 0.8414 & 0.9921 \\
+MAD-GAN & 0.9396 & \best{1.0000} & 0.9689 & 0.9836 & \best{0.9991} & 0.8440 & 0.9150 & 0.9933 \\
+USAD & 0.8953 & 0.9989 & 0.9443 & 0.9701 & 0.9060 & \best{0.9974} & 0.9495 & 0.9933 \\
+MTAD-GAT & 0.9018 & \best{1.0000} & 0.9484 & 0.9721 & 0.8210 & 0.9215 & 0.8683 & 0.9921 \\
+CAE-M & 0.8442 & 0.9997 & 0.9154 & 0.9661 & 0.9082 & 0.9671 & 0.9367 & 0.9783 \\
+GDN & 0.8832 & 0.9892 & 0.9332 & 0.9528 & 0.7170 & \best{0.9974} & 0.8342 & 0.9924 \\
+TranAD & 0.9569 & \best{1.0000} & 0.9780 & 0.9885 & 0.9262 & \best{0.9974} & \best{0.9605} & \best{0.9974} \\
+Ours & 0.9561 & \best{1.0000} & \best{0.9776} & \best{0.9720} & 0.9204 & 0.9974 & 0.9573 & 0.9942 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.6em}
+
+\begin{tabular}{l*{8}{c}}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{4}{c}{SMAP} & \multicolumn{4}{c}{MSL} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+& P & R & F1 & AUC & P & R & F1 & AUC \\
+\midrule
+MERLIN & 0.1577 & 0.9999 & 0.2725 & 0.7426 & 0.2613 & 0.4645 & 0.3345 & 0.6281 \\
+DAGMM & 0.8069 & 0.9891 & 0.8888 & 0.9885 & 0.7363 & \best{1.0000} & 0.8482 & 0.9716 \\
+MSCRED & 0.8175 & 0.9216 & 0.8664 & 0.9821 & 0.8912 & 0.9862 & 0.9363 & 0.9807 \\
+MAD-GAN & 0.8157 & 0.9216 & 0.8654 & 0.9891 & 0.8516 & 0.9930 & 0.9169 & 0.9862 \\
+USAD & 0.7480 & 0.9627 & 0.8419 & 0.9890 & 0.7949 & 0.9912 & 0.8822 & 0.9795 \\
+MTAD-GAT & 0.7991 & 0.9991 & 0.8880 & 0.9844 & 0.7917 & 0.9824 & 0.8768 & 0.9899 \\
+CAE-M & 0.8193 & 0.9567 & 0.8827 & 0.9901 & 0.7751 & \best{1.0000} & 0.8733 & 0.9903 \\
+GDN & 0.7480 & 0.9891 & 0.8518 & 0.9864 & \best{0.9308} & 0.9892 & \best{0.9591} & 0.9814 \\
+TranAD & 0.8043 & 0.9999 & 0.8915 & \best{0.9921} & 0.9038 & 0.9999 & 0.9494 & \best{0.9916} \\
+Ours & \best{0.8367} & \best{1.0000} & \best{0.9111} & 0.9908 & 0.9038 & \best{1.0000} & 0.9495 & \best{0.9916} \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.6em}
+
+\begin{tabular}{l*{8}{c}}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{4}{c}{SWaT} & \multicolumn{4}{c}{Synthetic} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+& P & R & F1 & AUC & P & R & F1 & AUC \\
+\midrule
+MERLIN & 0.6560 & 0.2547 & 0.3669 & 0.6175 & 0.0622 & 0.6625 & 0.1137 & 0.5794 \\
+DAGMM & 0.9933 & 0.6879 & 0.8128 & 0.8436 & 0.9562 & \best{1.0000} & 0.9776 & 0.9988 \\
+MSCRED & 0.9992 & 0.6770 & 0.8072 & 0.8433 & 0.9658 & \best{1.0000} & 0.9826 & 0.9991 \\
+MAD-GAN & 0.9593 & 0.6957 & 0.8065 & 0.8463 & \best{0.9717} & \best{1.0000} & \best{0.9856} & \best{0.9993} \\
+USAD & 0.9977 & 0.6879 & 0.8143 & 0.8460 & 0.9562 & \best{1.0000} & 0.9776 & 0.9988 \\
+MTAD-GAT & 0.9718 & 0.6957 & 0.8109 & 0.8464 & 0.7856 & \best{1.0000} & 0.8799 & 0.9931 \\
+CAE-M & 0.9697 & 0.6957 & 0.8101 & 0.8464 & 0.9600 & \best{1.0000} & 0.9796 & 0.9989 \\
+GDN & 0.9697 & 0.6957 & 0.8101 & 0.8462 & 0.9697 & \best{1.0000} & 0.9846 & 0.9992 \\
+TranAD & 0.9760 & \best{0.6997} & \best{0.8151} & \best{0.8491} & 0.9562 & \best{1.0000} & 0.9776 & 0.9988 \\
+Ours & \best{0.9921} & 0.6995 & \best{0.8205} & 0.8525 & 0.9642 & \best{1.0000} & 0.9818 & 0.9992 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{adjustbox}
+\end{table}
+
+
+\end{document}
+

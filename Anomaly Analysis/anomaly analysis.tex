@@ -1,0 +1,68 @@
+
+\documentclass[a4paper,11pt]{article}
+\usepackage[margin=1in]{geometry}
+
+% Core packages
+\usepackage{amsmath,amssymb}
+\usepackage{tikz-cd}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{adjustbox}
+\usepackage{pdflscape}
+% Paragraphs
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1\baselineskip}
+
+\date{\today}
+
+\begin{document}
+
+\begin{table}[H]
+\centering
+\caption{Anomaly diagnosis}
+\label{tab:table2}
+\tiny
+\setlength{\tabcolsep}{2.6pt}
+\begin{adjustbox}{width=0.99\linewidth}
+\begin{minipage}{\linewidth}
+\centering
+
+\begin{tabular}{l*{4}{c}}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{4}{c}{SMD} \\
+\cmidrule(lr){2-5}
+& HitRate@100\% & HitRate@150\% & NDCG@100\% & NDCG@150\% \\
+\midrule
+MERLIN          & \textbf{0.5907} & 0.6177          & 0.4150          & 0.4912          \\
+LSTM-NDT        & 0.3808          & 0.5225          & 0.3603          & 0.4451          \\
+DAGMM           & 0.4927          & 0.6091          & 0.5169          & 0.5845          \\
+OmniAnomaly     & 0.4567          & 0.5652          & 0.4545          & 0.5125          \\
+MSCRED          & 0.4272          & 0.5180          & 0.4609          & 0.5164          \\
+MAD-GAN         & 0.4630          & 0.5785          & 0.4681          & 0.5522          \\
+USAD            & 0.4925          & 0.6055          & 0.5179          & 0.5781          \\
+MTAD-GAT        & 0.3493          & 0.4777          & 0.3759          & 0.4530          \\
+CAE-M           & 0.4707          & 0.5878          & \textbf{0.5474} & \textbf{0.6178} \\
+GDN             & 0.3143          & 0.4386          & 0.2980          & 0.3724          \\
+\textbf{TranAD} & 0.4981          & \textbf{0.6401} & 0.4941          & \textbf{0.6178} \\
+\textbf{Ours} & 0.5026          & \textbf{0.6452} & 0.4982          & \textbf{0.6227} \\
+\bottomrule
+\end{tabular}
+
+
+\end{minipage}
+\end{adjustbox}
+\end{table}
+
+
+
+\end{document}
