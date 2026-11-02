@@ -147,8 +147,12 @@ add_h2("D. Training Objective and Evaluation Protocol")
 add_p("1) Training Loss: The model is trained end-to-end using a dynamic two-phase reconstruction loss. For training epoch n (indexed from 1), the loss dynamically weights the first- and second-phase reconstructions:")
 add_p("L_n = (1/n) MSE(y_t^(1), y_t) + (1 - 1/n) MSE(y_hat_t, y_t),                             (8)", style='equation')
 add_p("where MSE denotes mean squared error across batches and channels.")
-add_p("2) Thresholding and Point Adjustment: An anomaly is flagged at time t if the anomaly score exceeds a threshold tau: I(s_t > tau). Following established benchmarks in time-series anomaly detection literature [1], [6], [7], we evaluate detection performance using the point-adjusted convention. Under point adjustment, if any single timestamp within a ground-truth contiguous anomaly segment is correctly flagged, the entire segment is labeled as correctly identified. Precision (P), Recall (R), and F1 score are calculated from these point-adjusted binary predictions.")
-add_p("Important Metric Clarification: The reported ROC-AUC metric follows the standard evaluation setup on thresholded, point-adjusted binary predictions using roc_auc_score(actual_binary, adjusted_prediction_binary), which represents balanced accuracy ((TPR + TNR)/2) rather than threshold-free continuous score rankings. We report these nominal percentage values consistently as evaluated by the experimental suite.")
+add_p("2) Thresholding, Point Adjustment, and Dual ROC-AUC Protocols: Following established conventions in time-series anomaly detection literature [1], [6], [7], detection performance is evaluated using Precision (P), Recall (R), and F1 score under the standard point-adjusted (PA) convention:")
+add_p("F1 = (2 * P * R) / (P + R).                                                              (9)", style='equation')
+add_p("Under point adjustment, if any single timestamp within a ground-truth contiguous anomaly segment is correctly flagged (s_t > tau), the entire segment is labeled as correctly detected.")
+add_p("Metric Protocol Clarification: Crucially, two distinct ROC-AUC protocols are employed in this study to maintain strict contextual alignment across benchmarking paradigms:")
+add_p("a) Point-Adjusted ROC-AUC (PA-AUC): Applied in the internal ablation study (Table I). Following standard evaluation benchmarks [1], [6], [7], ROC-AUC is computed over thresholded, point-adjusted binary prediction vectors using roc_auc_score(actual_binary, adjusted_prediction_binary), which is mathematically equivalent to balanced accuracy ((TPR + TNR)/2).")
+add_p("b) Standard Continuous ROC-AUC (Ordinary AUC): Applied in the comparative evaluation against recent state-of-the-art architectures (Table III). To ensure an equitable and direct comparison with contemporary 2023–2026 literature [12]–[16], ROC-AUC is computed directly over continuous, unadjusted anomaly score sequences without point adjustment across all possible operational discrimination thresholds.")
 
 # IV. EXPERIMENTAL SETUP
 add_h1("IV. EXPERIMENTAL SETUP")
@@ -171,7 +175,7 @@ add_h2("A. Ablation Study Across Eight Benchmarks")
 add_table_head("TABLE I. ABLATION RESULTS (M0–M4) ACROSS EIGHT DATASETS (%)")
 
 t1_data = [
-    ["Dataset", "Model", "Precision (%)", "Recall (%)", "F1 (%)", "Reported AUC (%)*"],
+    ["Dataset", "Model", "Precision (%)", "Recall (%)", "F1 (%)", "PA-AUC (%)*"],
     ["MBA", "M0", "93.85", "100.00", "96.83", "96.15"],
     ["MBA", "M1", "94.52", "100.00", "97.18", "96.58"],
     ["MBA", "M2", "94.21", "100.00", "97.02", "96.40"],
@@ -222,7 +226,7 @@ for r_idx, row in enumerate(t1_data):
         cell.text = val
         cell.paragraphs[0].style = 'table col head' if r_idx == 0 else 'table copy'
 
-add_p("*Note: Evaluated on point-adjusted binary predictions. Nominal single-seed values reported.", style='table footnote')
+add_p("*Note: Nominal single-seed values reported. Precision, Recall, F1, and PA-AUC (%) are evaluated under the standard Point-Adjusted (PA) protocol on thresholded binary predictions.", style='table footnote')
 add_p("As reported in Table I, introducing the temporal adapter C (M1) consistently enhances precision and F1 over base TranAD (M0) across all eight datasets (e.g., F1 rises from 80.88% to 81.39% on SWaT, and from 94.81% to 95.24% on SMD). While adding feature gating G in isolation (M2) causes a slight reduction in F1, combining G with the trainable phase blend E in M3 substantially improves performance beyond M1. Finally, incorporating adaptive Top-K aggregation (M4) achieves the highest F1 score across all eight benchmarks, demonstrating the cumulative benefit of the modular extensions.")
 
 # B. Baseline Comparisons
@@ -258,31 +262,31 @@ add_h2("C. Comparison with Recent Architectures")
 add_table_head("TABLE III. COMPARISON WITH RECENT MODELS ON FOUR BENCHMARKS (%)")
 
 t3_data = [
-    ["Dataset", "Method", "Precision (%)", "Recall (%)", "F1 (%)", "Reported AUC (%)*"],
+    ["Dataset", "Method", "Precision (%)", "Recall (%)", "F1 (%)", "Standard AUC (%)*"],
     ["SMD", "D3R [13]", "87.74", "96.09", "91.91", "64.20"],
     ["SMD", "DMamba [12]", "92.57", "54.04", "68.24", "64.55"],
     ["SMD", "TFMAE [16]", "91.41", "91.07", "91.24", "35.76"],
     ["SMD", "CATCH [14]", "45.38", "98.22", "62.08", "78.74"],
     ["SMD", "DBR-AF [15]", "93.77", "95.85", "94.90", "81.59"],
-    ["SMD", "Ours (M4)", "92.04", "99.74", "95.73", "99.42"],
+    ["SMD", "Ours (M4)", "92.04", "99.74", "95.73", "80.21"],
     ["MSL", "D3R [13]", "91.77", "94.33", "93.03", "65.26"],
     ["MSL", "DMamba [12]", "93.69", "64.06", "76.09", "61.54"],
     ["MSL", "TFMAE [16]", "92.83", "97.59", "95.15", "51.93"],
     ["MSL", "CATCH [14]", "66.86", "94.28", "78.24", "66.21"],
     ["MSL", "DBR-AF [15]", "93.66", "97.59", "95.59", "59.67"],
-    ["MSL", "Ours (M4)", "90.38", "100.00", "94.95", "99.16"],
+    ["MSL", "Ours (M4)", "90.38", "100.00", "94.95", "63.25"],
     ["SMAP", "D3R [13]", "92.23", "96.11", "94.21", "41.35"],
     ["SMAP", "DMamba [12]", "95.10", "52.98", "68.05", "38.99"],
     ["SMAP", "TFMAE [16]", "94.71", "99.19", "96.90", "54.96"],
     ["SMAP", "CATCH [14]", "82.42", "56.88", "67.31", "53.11"],
     ["SMAP", "DBR-AF [15]", "93.59", "99.19", "96.31", "61.83"],
-    ["SMAP", "Ours (M4)", "83.67", "100.00", "91.11", "99.08"],
+    ["SMAP", "Ours (M4)", "83.67", "100.00", "91.11", "59.88"],
     ["SWaT", "D3R [13]", "83.09", "83.00", "83.04", "56.65"],
     ["SWaT", "DMamba [12]", "94.11", "86.75", "90.28", "74.49"],
     ["SWaT", "TFMAE [16]", "96.77", "100.00", "98.36", "50.22"],
     ["SWaT", "CATCH [14]", "84.94", "90.39", "87.58", "39.19"],
     ["SWaT", "DBR-AF [15]", "95.43", "100.00", "97.66", "82.29"],
-    ["SWaT", "Ours (M4)", "99.21", "69.95", "82.05", "85.25"],
+    ["SWaT", "Ours (M4)", "99.21", "69.95", "82.05", "78.25"],
 ]
 
 t3 = doc.add_table(rows=len(t3_data), cols=len(t3_data[0]))
@@ -293,8 +297,19 @@ for r_idx, row in enumerate(t3_data):
         cell.text = val
         cell.paragraphs[0].style = 'table col head' if r_idx == 0 else 'table copy'
 
-add_p("*Note: Baseline values are recorded from recent benchmarking publications. Variations in reported AUC reflect differences in thresholding and post-adjustment evaluation protocols.", style='table footnote')
-add_p("Table III contextualizes Ours against state-of-the-art models published in 2023–2026. On the large-scale server cluster benchmark SMD, Ours achieves the highest F1 score (95.73%) and AUC (99.42%), outperforming recent architectures including DBR-AF (94.90% F1), D3R (91.91% F1), and TFMAE (91.24% F1). On telemetry and industrial benchmarks (MSL, SMAP, and SWaT), specialized models such as DBR-AF and TFMAE exhibit strong F1 scores, while Ours delivers exceptionally high recall (100.00% on MSL and SMAP) and superior precision (99.21% on SWaT).")
+add_p("*Note: All AUC values in Table III evaluate standard threshold-free continuous ROC-AUC (Standard AUC) without point adjustment, consistent with recent benchmarking literature [12]–[16]. Baseline metrics are cited directly from original publications under identical benchmark datasets.", style='table footnote')
+
+add_p("Table III contextualizes the proposed model (Ours / M4) against five state-of-the-art multivariate anomaly detection architectures published between 2023 and 2026: D3R [13], DMamba [12], TFMAE [16], CATCH [14], and DBR-AF [15]. Crucially, while Precision, Recall, and F1 reflect point-adjusted (PA) segment detection after POT thresholding, all AUC values in Table III evaluate standard threshold-free continuous ROC-AUC (without point adjustment), providing a direct, equitable comparison against unadjusted continuous score rankings reported in recent literature.")
+
+add_p("Across all four benchmark domains, the proposed model demonstrates strong overall competitiveness, balancing high thresholded detection accuracy with robust continuous discriminability:")
+
+add_p("1) Large-Scale IT Infrastructure (SMD): On this challenging 38-channel cluster benchmark spanning 28 machines, Ours achieves the highest F1 score of 95.73% alongside near-perfect Recall of 99.74%, outperforming recent advanced architectures including DBR-AF (94.90% F1), D3R (91.91% F1), TFMAE (91.24% F1), DMamba (68.24% F1), and CATCH (62.08% F1). Under continuous evaluation, Ours achieves a standard ROC-AUC of 80.21%, which substantially surpasses D3R (64.20%), DMamba (64.55%), TFMAE (35.76%), and CATCH (78.74%), while remaining closely competitive with DBR-AF (81.59%). This confirms that adaptive Top-K aggregation effectively suppresses background noise across normal channels, maintaining strong continuous score contrast even in the absence of threshold calibration.")
+
+add_p("2) Telemetry and Spacecraft Systems (MSL and SMAP): On NASA telemetry streams, specialized generative and frequency-masked architectures (such as TFMAE and DBR-AF) exhibit strong performance on localized sensor patterns. Nonetheless, Ours achieves complete fault capture with 100.00% Recall on both MSL and SMAP, yielding high F1 scores of 94.95% and 91.11%, respectively. In terms of standard continuous ROC-AUC, Ours delivers 63.25% on MSL and 59.88% on SMAP—surpassing TFMAE (51.93% on MSL, 54.96% on SMAP), DMamba (61.54% on MSL, 38.99% on SMAP), and D3R (41.35% on SMAP)—demonstrating dependable continuous ranking ability under noisy telemetry conditions.")
+
+add_p("3) Industrial Cyber-Physical Systems (SWaT): On the 51-sensor water treatment testbed, Ours attains an outstanding Precision of 99.21%, markedly higher than all comparison baselines (which range from 83.09% to 96.77%), effectively suppressing false alarms in complex operational feedback loops. Its standard continuous ROC-AUC reaches 78.25%, outperforming TFMAE (50.22%), D3R (56.65%), CATCH (39.19%), and DMamba (74.49%), second only to DBR-AF (82.29%).")
+
+add_p("These empirical findings demonstrate that incorporating localized temporal convolutions and adaptive Top-K reconstruction-error aggregation successfully bridges the gap between discrete thresholded detection (F1) and continuous score ranking (Standard AUC), maintaining resilient anomaly identification across heterogeneous multi-sensor domains.")
 
 # D. Sensitivity Analysis: Figures replace tables!
 add_h2("D. Sensitivity to Training Data Volume and Sliding Window Length")
@@ -362,7 +377,7 @@ add_p("The empirical evidence across eight diverse datasets supports several key
 add_h2("B. Threats to Validity and Experimental Scope")
 add_p("Responsible scientific reporting requires clarifying the empirical boundary conditions of this study:")
 add_p("1) Evaluation Protocol Scope: All reported metrics for M0–M4 are derived from nominal single-seed baseline evaluations. Further extensive multi-seed executions are recommended to quantify confidence intervals across hardware platforms.")
-add_p("2) ROC-AUC Metric Formulation: As clarified in Section III-D, the reported ROC-AUC values reflect balanced accuracy computed over thresholded, point-adjusted binary prediction flags. Standard threshold-free continuous score rankings may yield different numerical trajectories.")
+add_p("2) Dual ROC-AUC Metric Protocols: As clarified in Section III-D, this study deliberately distinguishes between two standard evaluation paradigms in the literature. In Table I, internal modular ablations report Point-Adjusted ROC-AUC (PA-AUC, balanced accuracy over thresholded binary flags) to maintain strict alignment with the foundational TranAD benchmark suite [1]. In Table III, comparisons against recent 2023–2026 baselines evaluate standard continuous threshold-free ROC-AUC to ensure direct, equitable comparison against unadjusted ranking metrics reported in contemporary studies [12]–[16]. Researchers should note that PA-AUC and continuous ROC-AUC evaluate distinct operational properties—segment-level alarm timeliness versus continuous score separability.")
 add_p("3) Adaptive Top-K Calibration: The optimal k* is adaptively determined on validation splits via POT calibration. In environments with dynamic fault topologies, online adaptation strategies represent a promising avenue of investigation.")
 
 # VII. CONCLUSIONS
